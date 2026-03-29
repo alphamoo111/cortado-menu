@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cortado Menu | كورتادو منيو</title>
+    <style>
+        /* التنسيقات الأساسية */
+        :root {
+            --primary: #1a3a5f;
+            --accent: #d32f2f;
+            --white: #ffffff;
+            --overlay: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            overflow-x: hidden;
+            transition: background 0.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* شاشة الترحيب */
+        #welcome-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            background: var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease;
+        }
+
+        .logo-box h1 {
+            font-size: 3.5rem;
+            color: white;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+
+        .start-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+
+        .start-btn:active { transform: scale(0.95); }
+
+        /* القائمة الرئيسية */
+        #main-menu {
+            display: none;
+            padding: 20px;
+            min-height: 100vh;
+            background: rgba(255,255,255,0.95); /* خلفية بيضاء شفافة */
+        }
+
+        .header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .typewriter {
+            font-size: 1.1rem;
+            color: var(--primary);
+            height: 1.5em;
+            font-weight: 500;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .cat-card:hover { transform: translateY(-5px); }
+
+        .cat-card img { width: 55px; height: 55px; margin-bottom: 10px; object-fit: contain; }
+
+        .cat-name { font-weight: bold; font-size: 0.9rem; color: var(--primary); }
+
+        /* عرض الأصناف */
+        #section-view {
+            display: none;
+            padding: 20px;
+            min-height: 100vh;
+            background: var(--overlay); /* شاشة سوداء شفافة لتوضيح النص */
+        }
+
+        .back-btn {
+            background: white;
+            color: var(--primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            margin-bottom: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .items-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.98);
+            margin-bottom: 12px;
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 6px solid var(--primary);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } }
+
+        .item-info { text-align: right; }
+        .en-name { font-size: 0.8rem; color: #666; display: block; }
+        .ar-name { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
+        .price { font-size: 1rem; font-weight: bold; color: var(--accent); white-space: nowrap; }
+
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen">
+        <div class="logo-box">
+            <h1>CORTADO</h1>
+        </div>
+        <button class="start-btn" onclick="showMenu()">انتقل للمنيو ☕</button>
+    </div>
+
+    <div id="main-menu">
+        <div class="header">
+            <h2 style="letter-spacing: 3px; color: var(--primary);">CORTADO</h2>
+            <div id="type-en" class="typewriter"></div>
+            <div id="type-ar" class="typewriter"></div>
+        </div>
+
+        <div class="categories-grid">
+            <div class="cat-card" onclick="loadSection('coffee', 'coffee.png')">
+                <img src="/static/assets/coffee.png"> <div class="cat-name">COFFEE</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('hot-drinks', 'hot_drinks.png')">
+                <img src="/static/assets/hot_drinks.png"> <div class="cat-name">HOT DRINKS</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('specialty-iced', 'iced_coffee.png')">
+                <img src="/static/assets/iced_coffee.png"> <div class="cat-name">SPECIALTY ICED</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('matcha', 'matcha.png')">
+                <img src="/static/assets/matcha.png"> <div class="cat-name">MATCHA</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('frappe', 'frappe.png')">
+                <img src="/static/assets/frappe.png"> <div class="cat-name">FRAPPE</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('soft-drinks', 'soft_drinks.png')">
+                <img src="/static/assets/soft_drinks.png"> <div class="cat-name">SOFT DRINKS</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('smoothies', 'smoothies.png')">
+                <img src="/static/assets/smoothies.png"> <div class="cat-name">SMOOTHIES</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('milkshakes', 'shakes.png')">
+                <img src="/static/assets/shakes.png"> <div class="cat-name">MILKSHAKES</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('fresh-juices', 'juices.png')">
+                <img src="/static/assets/juices.png"> <div class="cat-name">FRESH JUICE</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('mix-soda', 'soda.png')">
+                <img src="/static/assets/soda.png"> <div class="cat-name">MIX SODA</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('boba', 'boba.png')">
+                <img src="/static/assets/boba.png"> <div class="cat-name">BOBA</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('desserts', 'desserts.png')">
+                <img src="/static/assets/desserts.png"> <div class="cat-name">DESSERTS</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('chimney', 'chimney.png')">
+                <img src="/static/assets/chimney.png"> <div class="cat-name">CHIMNEY</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('pancake', 'pancakes.png')">
+                <img src="/static/assets/pancakes.png"> <div class="cat-name">PANCAKE</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('waffle', 'waffles.png')">
+                <img src="/static/assets/waffles.png"> <div class="cat-name">WAFFLE</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('ice-cream', 'ice_cream.png')">
+                <img src="/static/assets/ice_cream.png"> <div class="cat-name">ICE CREAM</div>
+            </div>
+            <div class="cat-card" onclick="loadSection('extra', 'extra.png')">
+                <img src="/static/assets/extra.png"> <div class="cat-name">EXTRA</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-view">
+        <button class="back-btn" onclick="backToMain()">← العودة</button>
+        <div class="items-container" id="items-list"></div>
+    </div>
+
+    <script>
+        const menuData = {
+            'coffee': [
+                {en:'ESPRESSO', ar:'اسبريسو', price:'50/60'}, {en:'ESPRESSO MACCHIATO', ar:'اسبريسو ماكياتو', price:'50/60'},
+                {en:'CORTADO', ar:'كورتادو', price:'60'}, {en:'FLAT WHITE', ar:'فلات وايت', price:'75'},
+                {en:'CAFE LATTE', ar:'كافيه لاتيه', price:'75'}, {en:'CAPPUCCINO', ar:'كابتشينو', price:'85'},
+                {en:'AMERICANO', ar:'أمريكانو', price:'65'}, {en:'MOCHA', ar:'موكا', price:'80'},
+                {en:'WHITE MOCHA', ar:'وايت موكا', price:'80'}, {en:'SPANISH LATTE', ar:'سبانش لاتيه', price:'80'},
+                {en:'CARAMEL MACCHIATO', ar:'كراميل ماكياتو', price:'85'}, {en:'PISTACHIO LATTE', ar:'بستاشيو لاتيه', price:'95'},
+                {en:'NESCAFE', ar:'نسكافيه', price:'60'}, {en:'TURKISH COFFEE', ar:'قهوة تركي ساده', price:'35/40'},
+                {en:'FRENCH COFFEE', ar:'قهوة فرنساوي', price:'50'}, {en:'WITH SPICES COFFEE', ar:'قهوة تركي محوج', price:'45/40'},
+                {en:'HAZELNUT COFFEE', ar:'قهوة بندق', price:'50'}, {en:'AFFOGATO', ar:'اڤوجاتو', price:'75'}
+            ],
+            'hot-drinks': [
+                {en:'TEA', ar:'شاي', price:'35'}, {en:'FLAVORED TEA', ar:'شاي نكهات', price:'40'},
+                {en:'GREEN TEA', ar:'شاي أخضر', price:'35'}, {en:'MILK TEA', ar:'شاي بحليب', price:'50'},
+                {en:'HIBISCUS', ar:'كركديه', price:'35'}, {en:'ANISE', ar:'يانسون', price:'35'},
+                {en:'MINT', ar:'نعناع', price:'30'}, {en:'HERBS', ar:'اعشاب', price:'40'},
+                {en:'HOT CHOCOLATE', ar:'هوت شوكليت', price:'85'}, {en:'OREO HOT CHOCOLATE', ar:'هوت شوكليت اوريو', price:'65'},
+                {en:'LOTES HOT CHOCOLATE', ar:'هوت شوكليت لوتس', price:'70'}, {en:'CINNAMON MILK', ar:'قرفة لبن', price:'55'},
+                {en:'FRUITS SAHLAB', ar:'سحلب فواكه', price:'85'}, {en:'SAHLAB NUTS', ar:'سحلب مكسرات', price:'75'},
+                {en:'MARSHMALLOWS HOT CHOCOLATE', ar:'هوت شوكليت مارشميلو', price:'75'}, {en:'HOT CIDRE', ar:'هوت سيدر', price:'55'},
+                {en:'MASALA CHAI', ar:'شاي كرك', price:'60'}
+            ],
+            'specialty-iced': [
+                {en:'V60', ar:'V60', price:'110'}, {en:'CHEMEX', ar:'كيمكس', price:'110'},
+                {en:'AEROPRESS', ar:'اداه الضغط', price:'100'}, {en:'COLD BREW', ar:'كولد برو', price:'85'},
+                {en:'ICED AMERICANO', ar:'أيس أمريكانو', price:'80'}, {en:'ESPRESSO ORANGE', ar:'اسبريسو برتقال', price:'85'},
+                {en:'ICED CARAMEL MACCHIATO', ar:'أيس كراميل ماكياتو', price:'90'}, {en:'ICED LATTE', ar:'أيس لاتيه', price:'85'},
+                {en:'ICED MOCHA', ar:'أيس موكا', price:'85'}, {en:'ICED WHITE MOCHA', ar:'أيس وايت موكا', price:'85'},
+                {en:'ICED SPANISH LATTE', ar:'أيس سبانش لاتيه', price:'85'}, {en:'ICED FLAT WHITE', ar:'أيس فلات وايت', price:'85'}
+            ],
+            'matcha': [
+                {en:'MATCHA WITH HONEY', ar:'ماتشا بالعسل', price:'110'}, {en:'MATCHA SWEETENED MILK', ar:'ماتشا بالحليب المحلى', price:'110'},
+                {en:'MATCHA FRUIT', ar:'ماتشا فواكه', price:'115'}, {en:'MATCHA VANILLA COCONUT', ar:'ماتشا فانيليا جوز هند', price:'115'}
+            ],
+            'frappe': [
+                {en:'CARAMEL FRAPPE', ar:'فرابيه كراميل', price:'75'}, {en:'VANILLA FRAPPE', ar:'فرابيه فانيليا', price:'75'},
+                {en:'CHOCOLATE FRAPPE', ar:'فرابيه شوكليت', price:'75'}, {en:'PISTACHIO FRAPPE', ar:'فرابيه بستاشيو', price:'85'},
+                {en:'COFFEE FRAPPE', ar:'فرابيه قهوة', price:'75'}, {en:'MOCHA FRAPPE', ar:'فرابيه موكا', price:'75'}
+            ],
+            'soft-drinks': [
+                {en:'V-COLA', ar:'في كولا', price:'35'}, {en:'PEPSI', ar:'بيبسي', price:'35'},
+                {en:'MIRINDA', ar:'ميرندا', price:'35'}, {en:'7UP', ar:'سفن', price:'35'},
+                {en:'FAYROUZ', ar:'فيروز', price:'35'}, {en:'RED BULL', ar:'ريد بول', price:'65'},
+                {en:'SCHWEPPES', ar:'شويبس', price:'35'}, {en:'WATER BOTTLE', ar:'زجاجة مياه', price:'12'}
+            ],
+            'smoothies': [
+                {en:'MANGO', ar:'مانجو', price:'75'}, {en:'STRAWBERRY', ar:'فراولة', price:'75'},
+                {en:'WATERMELON', ar:'بطيخ', price:'75'}, {en:'BLUEBERRY', ar:'بلوبيري', price:'75'},
+                {en:'PINEAPPLE', ar:'أناناس', price:'75'}, {en:'KIWI', ar:'كيوي', price:'75'},
+                {en:'APPLE', ar:'تفاح', price:'75'}, {en:'BLUE PASSION', ar:'بلو باشون', price:'75'},
+                {en:'BLUE HAWAII', ar:'بلو هواي', price:'75'}, {en:'PEACH', ar:'خوخ', price:'75'},
+                {en:'PASSION FRUIT', ar:'باشون فروت', price:'75'}, {en:'RED BERRIES', ar:'توت أحمر', price:'75'},
+                {en:'MIXED BERRIES', ar:'مكس توت', price:'75'}, {en:'COLA', ar:'كولا', price:'75'}
+            ],
+            'milkshakes': [
+                {en:'CHOCOLATE', ar:'شوكولاتة', price:'95'}, {en:'VANILLA', ar:'فانيليا', price:'95'},
+                {en:'CARAMEL', ar:'كراميل', price:'95'}, {en:'OREO', ar:'أوريو', price:'95'},
+                {en:'LOTUS', ar:'لوتس', price:'95'}, {en:'HAZELNUT', ar:'بندق', price:'95'},
+                {en:'PISTACHIO', ar:'بستاشيو', price:'110'}, {en:'STRAWBERRY', ar:'فراولة', price:'95'},
+                {en:'MANGO', ar:'مانجو', price:'95'}, {en:'BERRIES', ar:'توت', price:'95'}
+            ],
+            'fresh-juices': [
+                {en:'MANGO', ar:'مانجو', price:'85'}, {en:'LEMON', ar:'ليمون', price:'60'},
+                {en:'LEMON MINT', ar:'ليمون نعناع', price:'70'}, {en:'WATERMELON', ar:'بطيخ', price:'70'},
+                {en:'KIWI', ar:'كيوي', price:'95'}, {en:'PIÑA COLADA', ar:'بينا كولادا', price:'85'},
+                {en:'WATERMELON MINT', ar:'بطيخ نعناع', price:'85'}, {en:'MANGO KIWI', ar:'مانجو كيوي', price:'85'},
+                {en:'MANGO PEACH', ar:'مانجو خوخ', price:'85'}, {en:'STRAWBERRY', ar:'فراولة', price:'70'},
+                {en:'ORANGE', ar:'برتقال', price:'70'}, {en:'GUAVA', ar:'جوافة', price:'70'}, {en:'BANANA', ar:'موز', price:'70'},
+            ],
+            'mix-soda': [
+                {en:'CLASSIC MOJITO', ar:'موهيتو كلاسيك', price:'75'}, {en:'FRUIT MOJITO', ar:'موهيتو فواكه', price:'75'},
+                {en:'BLUE HAWAII', ar:'بلو هواي', price:'75'}, {en:'SUNSHINE', ar:'صن شاين', price:'75'},
+                {en:'BLUE OCEAN', ar:'بلو أوشن', price:'75'}, {en:'BLUE PASSION', ar:'بلو باشون', price:'75'},
+                {en:'SHERRY COLA', ar:'شيري كولا', price:'75'}, {en:'REDBULL', ar:'ريدبول', price:'100'},
+                {en:'REDBULL HORSE', ar:'ريدبول هورس', price:'110'}
+            ],
+            'boba': [
+                {en:'BLUEBERRY', ar:'بوبا بلوبيري', price:'85'}, {en:'STRAWBERRY', ar:'بوبا فراولة', price:'85'},
+                {en:'PASSION FRUIT', ar:'بوبا باشون فروت', price:'85'}, {en:'COFFEE', ar:'بوبا كوفي', price:'85'},
+                {en:'CHEESECAKE', ar:'بوبا تشيز كيك', price:'85'}
+            ],
+            'desserts': [
+                {en:'MOLTEN CAKE', ar:'مولتن كيك', price:'85'}, {en:'CHEESECAKE', ar:'تشيز كيك', price:'75'},
+                {en:'BROWNIES', ar:'براونيز', price:'65'}, {en:'CINNABON', ar:'سينابون', price:'85'},
+                {en:"MAD'S OREO", ar:'اوريو مادنس', price:'105'}, {en:"MAD'S LOTUS", ar:'مادنس لوتس', price:'105'},
+                {en:"MAD'S MIX", ar:'مادنس مكس', price:'105'}
+            ],
+            'chimney': [
+                {en:'CONE NUTELLA', ar:'شيمني كونو نوتيلا', price:'75'}, {en:'CONE LOTUS', ar:'شيمني كونو لوتس', price:'75'},
+                {en:'CONE PISTACHIO', ar:'شيمني كونو بستاشيو', price:'85'}, {en:'CONE OREO', ar:'شيمني كونو أوريو', price:'65'},
+                {en:'CONE MIX', ar:'شيمني كونو ميكس', price:'85'}, {en:'ROLL NUTELLA', ar:'شيمني رول نوتيلا', price:'95'},
+                {en:'ROLL LOTUS', ar:'شيمني رول لوتس', price:'105'}, {en:'ROLL PISTACHIO', ar:'شيمني رول بستاشيو', price:'105'},
+                {en:'ROLL OREO', ar:'شيمني رول أوريو', price:'95'}, {en:'ROLL MIX', ar:'شيمني رول مكس', price:'105'}
+            ],
+            'pancake': [
+                {en:'NUTELLA', ar:'بانكيك نوتيلا', price:'60/100'}, {en:'LOTUS', ar:'بانكيك لوتس', price:'60/100'},
+                {en:'OREO', ar:'بانكيك أوريو', price:'60/100'}, {en:'PISTACHIO', ar:'بانكيك بيستاشيو', price:'70/110'},
+                {en:'MIX', ar:'بانكيك ميكس', price:'70/110'}
+            ],
+            'waffle': [
+                {en:'NUTELLA', ar:'وافل نوتيلا', price:'75'}, {en:'LOTUS', ar:'وافل لوتس', price:'75'},
+                {en:'OREO', ar:'وافل أوريو', price:'75'}, {en:'PISTACHIO', ar:'وافل بيستاشيو', price:'95'},
+                {en:'MIX', ar:'وافل ميكس', price:'90'}, {en:'FRUIT', ar:'وافل فواكه', price:'90'}
+            ],
+            'ice-cream': [
+                {en:'CHOCOLATE SUNDAY', ar:'أيس كريم شوكولاتة', price:'50/70'}, {en:'VANILLA SUNDAY', ar:'أيس كريم فانيليا', price:'50/70'},
+                {en:'STRAWBERRY SUNDAY', ar:'أيس كريم فراولة', price:'50/70'}, {en:'MANGO SUNDAY', ar:'أيس كريم مانجو', price:'50/70'}
+            ],
+            'extra': [
+                {en:'ESPRESSO', ar:'اسبريسو', price:'20'}, {en:'SAUCE', ar:'صوص', price:'20'}, {en:'BOBA', ar:'بوبا', price:'30'}
+            ]
+        };
+
+        function showMenu() {
+            // محاولة تشغيل الصوت الترحيبي
+            new Audio('/static/assets/Welcome.mp3').play().catch(e => console.log("Audio play deferred or failed"));
+            
+            const screen = document.getElementById('welcome-screen');
+            screen.style.opacity = '0';
+            setTimeout(() => {
+                screen.style.display = 'none';
+                const mainMenu = document.getElementById('main-menu');
+                mainMenu.style.display = 'block';
+                // بدء تأثير الكتابة بعد إظهار القائمة
+                setTimeout(() => {
+                    mainMenu.style.opacity = '1';
+                    typeWriter("type-en", "Welcome to Cortado.. Best vibes, better drinks.");
+                    setTimeout(() => typeWriter("type-ar", "أهلاً بك في كورتادو.. أفضل قاعدة وأحسن مشاريب"), 1500);
+                }, 50);
+            }, 800);
+        }
+
+        function typeWriter(id, text) {
+            let i = 0;
+            const el = document.getElementById(id);
+            if(!el) return;
+            el.innerHTML = "";
+            function type() {
+                if (i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(type, 50); }
+            }
+            type();
+        }
+
+        function loadSection(id, imgName) {
+            // تغيير خلفية الموقع بناءً على القسم
+            document.body.style.backgroundImage = `url('/static/assets/${imgName}')`;
+            
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('section-view').style.display = 'block';
+            
+            const list = document.getElementById('items-list');
+            list.innerHTML = ""; // مسح الأصناف السابقة
+            
+            // إضافة الأصناف الجديدة
+            if(menuData[id]) {
+                menuData[id].forEach(item => {
+                    list.innerHTML += `
+                        <div class="item-card">
+                            <div class="item-info">
+                                <span class="en-name">${item.en}</span>
+                                <span class="ar-name">${item.ar}</span>
+                            </div>
+                            <div class="price">${item.price} EGP</div>
+                        </div>`;
+                });
+            }
+            window.scrollTo(0,0); // العودة لأعلى الصفحة
+        }
+
+        function backToMain() {
+            // إزالة خلفية القسم والعودة للقائمة الرئيسية
+            document.body.style.backgroundImage = "none";
+            document.getElementById('section-view').style.display = 'none';
+            document.getElementById('main-menu').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>
